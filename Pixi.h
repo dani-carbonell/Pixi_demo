@@ -235,6 +235,7 @@ class Pixi
 {
   public:
     Pixi();
+    Pixi(int slaveSelectPin);
     word ReadRegister (byte address, boolean debug);
     void WriteRegister (byte address, word value);
     word config();
@@ -249,6 +250,7 @@ class Pixi
   private:
     int _channel;
     int _temp_channel;
+    int _slaveSelectPin;
 };
 
 #endif  // PIXI_H
