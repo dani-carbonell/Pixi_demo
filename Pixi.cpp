@@ -9,10 +9,10 @@
 #include "Pixi.h"
 
 // set pin 10 as the slave select for the SPI interface:
-const int slaveSelectPin = 10;
+
 
 // Config SPI for communication witht the PIXI
-Pixi::Pixi()
+Pixi::Pixi(int slaveSelectPin = 10)
 {
 
 // Config SPI interface
@@ -22,8 +22,9 @@ SPI.begin();
 SPI.setClockDivider(SPI_CLOCK_DIV2);
 SPI.setDataMode(SPI_MODE0);
 SPI.setBitOrder(MSBFIRST) ; 
-
+_slaveSelectPin = slaveSelectPin;
 }
+
 
 /*
 Read register and return value
@@ -44,7 +45,7 @@ if (debug) {
 };          
 
   // take the SS pin low to select the chip:
-  digitalWrite(slaveSelectPin,LOW);
+  digitalWrite(_slaveSelectPin,LOW);
   //  send in the address and return value via SPI:
   SPI.transfer( (address << 0x01) | PIXI_READ );
   read1 = SPI.transfer(0x00);
@@ -59,7 +60,7 @@ if (debug) {
 
   result = (read1 << 8) + read2;
   // take the SS pin high to de-select the chip:
-  digitalWrite(slaveSelectPin,HIGH); 
+  digitalWrite(_slaveSelectPin,HIGH); 
 
 if (debug) {
 //		Serial.print("SPI read result 0x");
@@ -80,13 +81,13 @@ void Pixi::WriteRegister(byte address, word value)
     byte value_hi =0;
     
   // take the SS pin low to select the chip:
-  digitalWrite(slaveSelectPin,LOW);
+  digitalWrite(_slaveSelectPin,LOW);
   //  send in the address and value via SPI:
   SPI.transfer( (address << 0x01) | PIXI_WRITE );
   SPI.transfer( byte( value >> 8));
   SPI.transfer( byte( value & 0xFF));
   // take the SS pin high to de-select the chip:
-  digitalWrite(slaveSelectPin,HIGH); 
+  digitalWrite(_slaveSelectPin,HIGH); 
 
   return; // (result);
 }
@@ -133,7 +134,7 @@ Channel Config
 Parameters that are not used for the selected channel are ignored.
 */
 
-word Pixi::configChannel( int channel, int channel_mode, word dac_dat, word range, byte adc_ctl )
+word Pixi:: configChannel( int channel, int channel_mode, word dac_dat, word range, byte adc_ctl )
 {
   word result = 0;
   word info = 0;
@@ -324,4 +325,5 @@ word channel_func = 0;
 
   return (result);
 };
+
 
